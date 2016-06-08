@@ -10,6 +10,7 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
 
     signingConfigs {
@@ -35,26 +36,16 @@ android {
         }
         release {
             minifyEnabled false
-            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
     }
 
-    lintOptions {
-        disable 'InvalidPackage'
-        abortOnError false
-        checkReleaseBuilds false
-    }
-
-    packagingOptions {
-        exclude 'META-INF/services/javax.annotation.processing.Processor'
-    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:multidex:1.0.1'
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:design:23.4.0'
     compile 'com.jakewharton:butterknife:7.0.1'
@@ -66,4 +57,5 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.7.5'
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'com.google.android.gms:play-services:9.0.0'
+    compile 'com.google.android.gms:play-services-location:9.0.0'
 }

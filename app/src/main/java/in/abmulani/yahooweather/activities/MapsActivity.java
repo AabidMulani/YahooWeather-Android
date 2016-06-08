@@ -419,7 +419,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
             temperatureTextView.setText("Temperature: " + channel.getItem().getCondition().getTemp().concat(" °F"));
             foreCastTextView.setText("Forecast: " + channel.getItem().getCondition().getText());
 
-            updateBackgroungColorIndicator(channel.getItem().getCondition().getTemp());
+            updateBackgroundColorIndicator(channel.getItem().getCondition().getTemp());
 
         } else {
             temperatureLayout.setVisibility(View.GONE);
@@ -429,25 +429,32 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
 
     }
 
-    private void updateBackgroungColorIndicator(String temp) {
+    private void updateBackgroundColorIndicator(String temp) {
         try {
             double temperature = Double.parseDouble(temp);
 
-            if (temperature < 10) {
+            if (temperature < 42) {
                 holderLayout.setBackgroundColor(Color.WHITE);
-            } else if (temperature < 10) {
-                holderLayout.setBackgroundColor(Color.parseColor("#ffe0cc"));
-            } else if (temperature < 10) {
-                holderLayout.setBackgroundColor(Color.parseColor("#ffc299"));
-            } else if (temperature < 10) {
-                holderLayout.setBackgroundColor(Color.parseColor("#ffa366"));
-            } else if (temperature < 10) {
-                holderLayout.setBackgroundColor(Color.parseColor("#ff8533"));
+            } else if (temperature < 52) {
+                holderLayout.setBackgroundColor(Color.parseColor("#44ff0000"));
+            } else if (temperature < 62) {
+                holderLayout.setBackgroundColor(Color.parseColor("#55ff0000"));
+            } else if (temperature < 72) {
+                holderLayout.setBackgroundColor(Color.parseColor("#66ff0000"));
+            } else if (temperature < 82) {
+                holderLayout.setBackgroundColor(Color.parseColor("#77ff0000"));
+            } else if (temperature < 92) {
+                holderLayout.setBackgroundColor(Color.parseColor("#88ff0000"));
+            } else if (temperature < 102) {
+                holderLayout.setBackgroundColor(Color.parseColor("#99ff0000"));
+            } else if (temperature < 112) {
+                holderLayout.setBackgroundColor(Color.parseColor("#aaff0000"));
             } else {
-                holderLayout.setBackgroundColor(Color.parseColor("#ff6600"));
+                holderLayout.setBackgroundColor(Color.parseColor("#ff0000"));
             }
 
         } catch (Exception ex) {
+            Timber.e(Log.getStackTraceString(ex));
             holderLayout.setBackgroundColor(Color.WHITE);
         }
     }

@@ -1,6 +1,6 @@
 package in.abmulani.yahooweather;
 
-import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -18,9 +18,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import timber.log.Timber;
 
 /**
- * Created by aabid on 6/8/16.
+ * Base Application to hold values in application scope
  */
-public class BaseApplication extends Application {
+public class BaseApplication extends MultiDexApplication {
 
     private YahooWeatherRetrofitInterface yahooWeatherRetrofitInterface;
 
