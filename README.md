@@ -1,14 +1,16 @@
 # YahooWeather-Android
 #### App Working:
- 1) Checks for permission for Location Reading on Android L and above
+a. Checks for permission for Location Reading on Android L and above
  
- 2) Moves to your current location
+b. Moves to your current location
  
- 3) Reads City Name of your current pointed location
+c. Reads City Name of your current pointed location
  
- 4) Loads location information from yahoo weather API
+d. Loads location information from yahoo weather API
  
- 5) If you pan the Map the Camera Centre location will be used and fresh weather information will be displayed
+e. Background color changes depending on the value of the *temperature* at that location
+
+f. If you pan the Map the Camera Centre location will be used and fresh weather information will be displayed
  
 #### Screen Shots:
  
