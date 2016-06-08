@@ -1,7 +1,7 @@
 package in.abmulani.yahooweather.interfaces;
 
 /**
- * Created by aabid on 6/8/16.
+ * Callback interface from the Geocoder Async to get City Name
  */
 public interface OnLocationNameReader {
 

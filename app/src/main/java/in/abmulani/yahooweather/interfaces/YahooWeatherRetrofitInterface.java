@@ -6,7 +6,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 /**
- * Created by aabid on 3/29/16.
+ * Retrofit Adapter
  */
 public interface YahooWeatherRetrofitInterface {
 

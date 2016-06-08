@@ -10,6 +10,7 @@ import com.google.gson.internal.bind.DateTypeAdapter;
 import java.util.Date;
 
 import in.abmulani.yahooweather.interfaces.YahooWeatherRetrofitInterface;
+import in.abmulani.yahooweather.utils.AppConstants;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -55,7 +56,7 @@ public class BaseApplication extends Application {
         httpClient.addInterceptor(interceptor);
 
         Retrofit restAdapter = new Retrofit.Builder()
-                .baseUrl("https://query.yahooapis.com/")
+                .baseUrl(AppConstants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(httpClient.build())
                 .build();

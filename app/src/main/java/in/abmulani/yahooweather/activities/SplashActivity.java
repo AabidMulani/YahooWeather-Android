@@ -9,7 +9,7 @@ import in.abmulani.yahooweather.BaseActivity;
 import in.abmulani.yahooweather.R;
 
 /**
- * Created by aabid on 6/8/16.
+ * Splash Screen which holds for 2000ms
  */
 public class SplashActivity extends BaseActivity {
 

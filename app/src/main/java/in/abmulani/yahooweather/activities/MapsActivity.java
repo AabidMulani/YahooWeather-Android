@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -37,12 +38,23 @@ import in.abmulani.yahooweather.R;
 import in.abmulani.yahooweather.entityModels.Channel;
 import in.abmulani.yahooweather.entityModels.ResponseSet;
 import in.abmulani.yahooweather.interfaces.OnLocationNameReader;
+import in.abmulani.yahooweather.utils.NetworkUtility;
 import in.abmulani.yahooweather.utils.Utils;
 import in.abmulani.yahooweather.webAsyncs.GeocoderAsync;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
+
+
+/**
+ * Map Screen
+ * 1) Checks for permission for Location Reading on Android L and above
+ * 2) Moves to your current location
+ * 3) Reads City Name of your current pointed location
+ * 4) Loads location information from yahoo weather API
+ * 5) If you pan the Map the Camera Centre location will be used and fresh weather information will be displayed
+ */
 
 public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -91,6 +103,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     TextView temperatureTextView;
     @Bind(R.id.temperatureLayout)
     LinearLayout temperatureLayout;
+    @Bind(R.id.holderLayout)
+    RelativeLayout holderLayout;
 
 
     private GoogleMap googleMap;
@@ -108,6 +122,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         setContentView(R.layout.activity_maps);
         ButterKnife.bind(this);
         firstLocationRead = false;
+
+        // set up toolbar
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setHomeButtonEnabled(true);
@@ -143,8 +159,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     @Override
     protected void onPause() {
         super.onPause();
-        Log.v(this.getClass().getSimpleName(), "onPause()");
-
         if (googleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
             googleApiClient.disconnect();
@@ -174,6 +188,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         this.googleMap.getUiSettings().setScrollGesturesEnabled(true);
         this.googleMap.setOnCameraChangeListener(this);
 
+        // check for permissions
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_LOCATION_REQUEST);
         } else {
@@ -182,6 +197,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
 
     }
 
+    // indicates the current status or action on the UI (Top Left Orange TextView)
     private void setStatusMsg(String msg) {
         progressTextView.setText(msg);
     }
@@ -191,6 +207,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         switch (requestCode) {
             case PERMISSION_LOCATION_REQUEST: {
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // if permission not granted exit the application
                     Utils.showThisMsg(activity, "We require location permissions to proceed with this application. Please restart application and grant location permissions", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -205,6 +222,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         }
     }
 
+
+    // ---------- Location Related Logic -----------
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -223,7 +242,12 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                     currentLongitude = location.getLongitude();
                     setStatusMsg("Reading Current Location..");
                     googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), 14), 2000, null);
-                    new GeocoderAsync(activity, currentLatitude, currentLongitude, this).execute();
+                    if (NetworkUtility.isNetworkAvailable(activity)) {
+                        // GeoCoder call to get the location name
+                        new GeocoderAsync(activity, currentLatitude, currentLongitude, this).execute();
+                    } else {
+                        Utils.showSnackBar(activity, "No Network");
+                    }
                     firstLocationRead = true;
                 }
             }
@@ -244,7 +268,12 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         if (!firstLocationRead) {
             setStatusMsg("Reading Current Location..");
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLatitude, currentLongitude), 14), 2000, null);
-            new GeocoderAsync(activity, currentLatitude, currentLongitude, this).execute();
+            if (NetworkUtility.isNetworkAvailable(activity)) {
+                // GeoCoder call to get the location name
+                new GeocoderAsync(activity, currentLatitude, currentLongitude, this).execute();
+            } else {
+                Utils.showSnackBar(activity, "No Network");
+            }
             firstLocationRead = true;
         }
     }
@@ -263,6 +292,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         }
     }
 
+
+    // ---------- Retrieve Current City Logic -----------
+
     @Override
     public void onCityNameFound(String cityName) {
         Timber.d("onCityNameFound");
@@ -271,10 +303,44 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
         if (getSupportActionBar() != null)
             getSupportActionBar().setTitle(cityName);
 
-        getWeatherDataForThisCity(cityName);
+        if (NetworkUtility.isNetworkAvailable(activity)) {
+            getWeatherDataForThisCity(cityName);
+        } else {
+            Utils.showSnackBar(activity, "No Network");
+        }
+
 
     }
 
+    @Override
+    public void onCityNameReadError(String errMsg) {
+        Timber.d("onCityNameReadError");
+        dataLayout.setVisibility(View.GONE);
+        holderLayout.setBackgroundColor(Color.WHITE);
+    }
+
+
+    // ---------- Panning Map and Camera Changed -----------
+
+    @Override
+    public void onCameraChange(CameraPosition cameraPosition) {
+        setStatusMsg("Reading Panned Location..");
+        dataLayout.setVisibility(View.GONE);
+        if (NetworkUtility.isNetworkAvailable(activity)) {
+            new GeocoderAsync(activity, cameraPosition.target.latitude, cameraPosition.target.longitude, this).execute();
+        } else {
+            Utils.showSnackBar(activity, "No Network");
+        }
+    }
+
+
+    // ---------- Load Weather Information -----------
+
+    /**
+     * @param cityName The text name of the location this will be sent in the '?q=' param of the API call
+     *                 <p/>
+     *                 This method will call the weather api using the Retrofit library on success it will display the relevant weather information on the UI
+     */
     private void getWeatherDataForThisCity(String cityName) {
         try {
             String generatedYML = getYML(cityName);
@@ -296,6 +362,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
                     } else {
                         infoResultMsg.setVisibility(View.VISIBLE);
                         mainResultMsgLayout.setVisibility(View.GONE);
+                        holderLayout.setBackgroundColor(Color.WHITE);
                     }
                 }
 
@@ -311,6 +378,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
     }
 
 
+    /**
+     * Parse and display the Weather Data on the UI
+     */
     private void displayFormattedData(Channel channel) {
         if (channel.getAstronomy() != null) {
             sunriseLayout.setVisibility(View.VISIBLE);
@@ -349,32 +419,46 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback,
             temperatureTextView.setText("Temperature: " + channel.getItem().getCondition().getTemp().concat(" °F"));
             foreCastTextView.setText("Forecast: " + channel.getItem().getCondition().getText());
 
+            updateBackgroungColorIndicator(channel.getItem().getCondition().getTemp());
+
         } else {
             temperatureLayout.setVisibility(View.GONE);
             foreCastLayout.setVisibility(View.GONE);
+            holderLayout.setBackgroundColor(Color.WHITE);
         }
 
+    }
 
+    private void updateBackgroungColorIndicator(String temp) {
+        try {
+            double temperature = Double.parseDouble(temp);
+
+            if (temperature < 10) {
+                holderLayout.setBackgroundColor(Color.WHITE);
+            } else if (temperature < 10) {
+                holderLayout.setBackgroundColor(Color.parseColor("#ffe0cc"));
+            } else if (temperature < 10) {
+                holderLayout.setBackgroundColor(Color.parseColor("#ffc299"));
+            } else if (temperature < 10) {
+                holderLayout.setBackgroundColor(Color.parseColor("#ffa366"));
+            } else if (temperature < 10) {
+                holderLayout.setBackgroundColor(Color.parseColor("#ff8533"));
+            } else {
+                holderLayout.setBackgroundColor(Color.parseColor("#ff6600"));
+            }
+
+        } catch (Exception ex) {
+            holderLayout.setBackgroundColor(Color.WHITE);
+        }
     }
 
 
+    /**
+     * @param cityName
+     * @return the formatted QML for Yahoo Weather API
+     */
     private String getYML(String cityName) {
         return "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text=\"" + cityName + "\")";
-    }
-
-    @Override
-    public void onCityNameReadError(String errMsg) {
-        Timber.d("onCityNameReadError");
-//        Utils.showSnackBar(activity, errMsg);
-        dataLayout.setVisibility(View.GONE);
-    }
-
-
-    @Override
-    public void onCameraChange(CameraPosition cameraPosition) {
-        setStatusMsg("Reading Panned Location..");
-        dataLayout.setVisibility(View.GONE);
-        new GeocoderAsync(activity, cameraPosition.target.latitude, cameraPosition.target.longitude, this).execute();
     }
 
 
