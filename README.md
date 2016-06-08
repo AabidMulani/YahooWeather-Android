@@ -14,11 +14,13 @@ f. If you pan the Map the Camera Centre location will be used and fresh weather 
  
 #### Screen Shots:
  
- ![Splash Screen](https://raw.github.com/)
+ ![Splash Screen](https://github.com/AabidMulani/YahooWeather-Android/blob/master/screenshots/Image%201.jpg)
  
- ![Loading Screen](https://raw.github.com/)
+ ![Weather Screen](https://github.com/AabidMulani/YahooWeather-Android/blob/master/screenshots/Image%202.jpg)
  
- ![Weather Data](https://raw.github.com/)
+ ![Weather Data](https://github.com/AabidMulani/YahooWeather-Android/blob/master/screenshots/Image%203.jpg)
+ 
+ ![Weather Data](https://github.com/AabidMulani/YahooWeather-Android/blob/master/screenshots/Image%204.jpg)
  
  
 #### Third Party Used:
