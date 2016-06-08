@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 /**
- * Created by aabid on 6/8/16.
+ * App Base Activity to hold Activity level common code
  */
 public class BaseActivity extends AppCompatActivity {
 
@@ -17,8 +17,6 @@ public class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         activity = this;
     }
-
-
 
 
 }

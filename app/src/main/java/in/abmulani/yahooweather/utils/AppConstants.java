@@ -1,7 +1,10 @@
 package in.abmulani.yahooweather.utils;
 
 /**
- * Created by aabid on 6/8/16.
+ * Holds all the constant values for the Application
  */
 public class AppConstants {
+
+    public static final String BASE_URL = "https://query.yahooapis.com/";
+
 }
