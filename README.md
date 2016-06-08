@@ -13,15 +13,12 @@ e. Background color changes depending on the value of the *temperature* at that 
 f. If you pan the Map the Camera Centre location will be used and fresh weather information will be displayed
  
 #### Screen Shots:
- 
- ![Splash Screen](https://github.com/AabidMulani/YahooWeather-Android/blob/master/screenshots/Image%201.jpg)
- 
- ![Weather Screen](https://github.com/AabidMulani/YahooWeather-Android/blob/master/screenshots/Image%202.jpg)
- 
- ![Weather Data](https://github.com/AabidMulani/YahooWeather-Android/blob/master/screenshots/Image%203.jpg)
- 
- ![Weather Data](https://github.com/AabidMulani/YahooWeather-Android/blob/master/screenshots/Image%204.jpg)
- 
+
+ <img src="https://github.com/AabidMulani/YahooWeather-Android/blob/master/screenshots/Image%201.jpg" width="210">
+ <img src="https://github.com/AabidMulani/YahooWeather-Android/blob/master/screenshots/Image%202.jpg" width="210">
+ <img src="https://github.com/AabidMulani/YahooWeather-Android/blob/master/screenshots/Image%203.jpg" width="210">
+ <img src="https://github.com/AabidMulani/YahooWeather-Android/blob/master/screenshots/Image%204.jpg" width="210">
+
  
 #### Third Party Used:
  - Retrofit 2.0
